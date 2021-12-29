@@ -11,3 +11,6 @@ Places to go from here:
 * Nicer CSS
 * Authentication
 * Rooms
+* Notification of connection loss
+* Automatic reconnects
+* Command-line client
