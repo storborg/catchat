@@ -22,7 +22,7 @@ async def index(request):
 
 
 class ChatAPI(WebSocketEndpoint):
-    encoding = "text"
+    encoding = "json"
 
     async def on_connect(self, ws):
         self.uid = random.randint(1000000, 9999999)
@@ -33,8 +33,12 @@ class ChatAPI(WebSocketEndpoint):
         connections[self.uid] = ws
 
     async def on_receive(self, websocket, data):
+        msg = data["msg"]
         for conn in connections.values():
-            await conn.send_text(data)
+            await conn.send_json({
+                "uid": self.uid,
+                "msg": msg,
+            })
 
 
 class CatChatApp(Starlette):

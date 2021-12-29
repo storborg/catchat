@@ -13,9 +13,13 @@ if (window.location.protocol === "http:") {
 var url = scheme + "//" + window.location.hostname + ":" + window.location.port + "/api";
 var ws = new WebSocket(url);
 
-function emit(msg) {
+function emit(msg, uid) {
   var node = document.createElement("div");
-  node.innerHTML = msg;
+  if (uid) {
+    node.innerHTML = "" + uid + ": " + msg;
+  } else {
+    node.innerHTML = msg;
+  }
   messagesEl.appendChild(node);
 }
 
@@ -25,17 +29,19 @@ ws.addEventListener("open", function(e) {
 });
 
 ws.addEventListener("message", function(e) {
-  var msg = e.data;
-  console.log("received message from server: " + msg);
-  emit(msg);
+  console.log("received message from server: " + e.data);
+  var obj = JSON.parse(e.data);
+  emit(obj.msg, obj.uid);
 });
 
 formEl.addEventListener("submit", function(e) {
   e.preventDefault();
   e.stopPropagation();
   var msg = inputEl.value;
-  console.log("sending message: " + msg);
-  ws.send(msg);
+  var obj = {"msg": msg};
+  var data = JSON.stringify(obj);
+  console.log("sending message: " + data);
+  ws.send(data);
 });
 
 console.log("loaded");
